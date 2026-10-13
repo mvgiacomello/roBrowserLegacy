@@ -6166,9 +6166,11 @@ function loadSignBoardData(filename, callback, onEnd) {
 
 				// create required functions in context
 				ctx.AddSignBoardData = (key, translation) => {
-					const decoded_key = key && key.length > 1 ? userStringDecoder.decode(key) : null;
+					// Same charpage as loadSignBoardList decodes the descriptions with: with the default (the GRF's
+					// windows-1252) a Hangul key never equals its Hangul description, so no sign is translated.
+					const decoded_key = key && key.length > 1 ? userStringDecoder.decode(key, userCharpage) : null;
 					const decoded_translation =
-						translation && translation.length > 1 ? userStringDecoder.decode(translation) : null;
+						translation && translation.length > 1 ? userStringDecoder.decode(translation, userCharpage) : null;
 					SignBoardTranslatedTable[decoded_key] = decoded_translation;
 					return 1;
 				};
