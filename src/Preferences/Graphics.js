@@ -71,6 +71,13 @@ const defaultGraphicsSettings = {
 	cartoonPower: 1.5,
 	cartoonEdgeSlope: 1.5,
 
+	/**
+	 * Colour grade (LUT) from the looks the server publishes:
+	 * 'default' = the server's default look (none if it set none), 'none', or a look's name.
+	 */
+	lutName: 'default',
+	lutIntensity: 1.0,
+
 	casEnabled: false,
 	casContrast: 0.0,
 	casSharpening: 1.0,

@@ -51,6 +51,7 @@ import CAS from 'Renderer/Effects/Shaders/CAS.js';
 import FXAA from 'Renderer/Effects/Shaders/FXAA.js';
 import Vibrance from 'Renderer/Effects/Shaders/Vibrance.js';
 import Cartoon from 'Renderer/Effects/Shaders/Cartoon.js';
+import Lut from 'Renderer/Effects/Shaders/Lut.js';
 import Blind from 'Renderer/Effects/Shaders/Blind.js';
 
 import Upsampling from 'Renderer/Effects/Shaders/Upsampling.js';
@@ -476,6 +477,7 @@ function registerPostProcessModules(gl) {
 	PostProcess.register(CAS, gl);
 	PostProcess.register(Cartoon, gl);
 	PostProcess.register(Vibrance, gl);
+	PostProcess.register(Lut, gl);
 	PostProcess.register(VerticalFlip, gl);
 	PostProcess.register(Blind, gl);
 

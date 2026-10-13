@@ -14,6 +14,7 @@ import Context from 'Core/Context.js';
 import Preferences from 'Core/Preferences.js';
 import GraphicsSettings from 'Preferences/Graphics.js';
 import Renderer from 'Renderer/Renderer.js';
+import Lut from 'Renderer/Effects/Shaders/Lut.js';
 import UIManager from 'UI/UIManager.js';
 import GUIComponent from 'UI/GUIComponent.js';
 import htmlText from './GraphicsOption.html?raw';
@@ -106,6 +107,8 @@ GraphicsOption.init = function init() {
 	bindChange('.cartoonEnabled', oncartoonEnabled);
 	bindChange('.cartoonPower', oncartoonPower);
 	bindChange('.cartoonEdgeSlope', oncartoonEdgeSlope);
+	bindChange('.lutName', onlutName);
+	bindChange('.lutIntensity', onlutIntensity);
 
 	// Performance Mode
 	bindChange('.performanceMode', onTogglePerformanceMode);
@@ -152,6 +155,8 @@ GraphicsOption.onAppend = function onAppend() {
 	root.querySelector('.cartoonEnabled').checked = GraphicsSettings.cartoonEnabled;
 	root.querySelector('.cartoonEdgeSlope').value = GraphicsSettings.cartoonEdgeSlope;
 	root.querySelector('.cartoonPower').value = GraphicsSettings.cartoonPower;
+	root.querySelector('.lutIntensity').value = GraphicsSettings.lutIntensity;
+	fillLutChoices(root);
 
 	// Performance Mode
 	root.querySelector('.performanceMode').checked = GraphicsSettings.performanceMode;
@@ -282,6 +287,49 @@ function oncasContrast() {
 
 function oncasSharpening() {
 	GraphicsSettings.casSharpening = parseFloat(this.value);
+	GraphicsSettings.save();
+}
+
+/**
+ * The Color grade row lists the looks the server owner published, fetched again each time the window opens so a
+ * look added meanwhile shows up. With none published the row stays hidden.
+ */
+function fillLutChoices(root) {
+	Lut.loadCatalog(true).then(catalog => {
+		const row = root.querySelector('.lutRow');
+		const select = root.querySelector('.lutName');
+		if (!row || !select) {
+			return;
+		}
+
+		const fallback = catalog.luts.find(l => l.name === catalog.default);
+		const options = [
+			['default', fallback ? `Server default (${fallback.title})` : 'Server default (none)'],
+			['none', 'None'],
+			...catalog.luts.map(l => [l.name, l.title])
+		];
+		select.replaceChildren(
+			...options.map(([value, label]) => {
+				const option = document.createElement('option');
+				option.value = value;
+				option.textContent = label;
+				return option;
+			})
+		);
+
+		// A look the owner has since removed means no colour grade, so show "None" without changing the saved choice.
+		select.value = options.some(([value]) => value === GraphicsSettings.lutName) ? GraphicsSettings.lutName : 'none';
+		row.hidden = catalog.luts.length === 0;
+	});
+}
+
+function onlutName() {
+	GraphicsSettings.lutName = this.value;
+	GraphicsSettings.save();
+}
+
+function onlutIntensity() {
+	GraphicsSettings.lutIntensity = parseFloat(this.value);
 	GraphicsSettings.save();
 }
 
